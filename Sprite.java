@@ -79,7 +79,7 @@ public class Sprite {
 	public void paint(Graphics g, JPanel panel){
 		if(image == null){
 			g.setColor(color);
-			g.fillOval(x, y,width,width);
+			g.fillOval(x-width/2, y-width/2,width,width);
 		}
 		else{
 			image.paintIcon(panel, g, x, y);
