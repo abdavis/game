@@ -14,7 +14,7 @@ public class Frame {
 
 		jfrm.setVisible(true);
 
-
+		jfrm.addMouseListener(panel);
 
 	}
 	public static void main(String args[]){

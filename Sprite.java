@@ -9,18 +9,22 @@ public class Sprite {
 	private int x,y;//location
 	private double xspeed = 0, yspeed = 0;
 	private double xp, yp;
-	double XDir, YDir;//direction
-	ImageIcon image;
-	int width = 20;
+	double xDir, yDir;//direction
+	int width = 10,accelWidth=150;
+	int turnLength, turnCount=0;
+	int coastX, coastY;
+	public boolean go=false;
 	Color color = Color.BLACK;
-	public Sprite(int xp, int yp, double XDir, double YDir){
-		this.image = null;
+	public Sprite(int xp, int yp, double xDir, double yDir,int turnLength){
 		this.xp = xp;
 		this.yp = yp;
 		x = xp;
 		y = yp;
-		this.XDir = XDir;
-		this.YDir = YDir;
+		this.xDir = xDir;
+		this.yDir = yDir;
+		this.turnLength = turnLength;
+		coastX=xp;
+		coastY=yp;
 	}
 	public int getX(){
 		return x;
@@ -31,11 +35,11 @@ public class Sprite {
 	public int getWidth(){
 		return width;
 	}
-	public void setXDir(double XDir){
-		this.XDir = XDir;
+	public void setxDir(double xDir){
+		this.xDir = xDir;
 	}
-	public void setYDir(double YDir){
-		this.YDir = YDir;
+	public void setyDir(double yDir){
+		this.yDir = yDir;
 	}
 	public void setX(int x){
 		this.x = x;
@@ -63,26 +67,50 @@ public class Sprite {
 	}
 
 	public void move(){
-		xspeed+=XDir;
-		yspeed+=YDir;
-		xp += xspeed;
-		yp += yspeed;
-		XDir=0;
-		YDir=0;
+		if(go){
+			xspeed+=xDir;
+			yspeed+=yDir;
+			xp += xspeed;
+			yp += yspeed;
+			turnCount++;
+		}
+		if(turnCount==turnLength){
+			go=false;
+			xDir=0;
+			yDir=0;
+			turnCount=0;
+			coastX=x+(int)xspeed*turnLength;
+			coastY=y+(int)yspeed*turnLength;
+		}
 
 		x = (int)xp;
 		y = (int)yp;
 
 	}
-
-
 	public void paint(Graphics g, JPanel panel){
-		if(image == null){
+		if(!go){
+			g.setColor(Color.BLUE);
+			g.fillOval(coastX-accelWidth/2, coastY-accelWidth/2,accelWidth,accelWidth);
 			g.setColor(color);
 			g.fillOval(x-width/2, y-width/2,width,width);
 		}
 		else{
-			image.paintIcon(panel, g, x, y);
+			g.setColor(color);
+			g.fillOval(x-width/2, y-width/2,width,width);
 		}
+	}
+	public boolean startTurn(int targetX, int targetY){
+		double distance = Math.abs(Math.sqrt(Math.pow(targetX-coastX,2) + Math.pow(targetY-coastY,2)));
+		if( distance <= accelWidth/2){
+			int deltaX=targetX-x;
+			int deltaY=targetY-y;
+
+			xDir = (2*deltaX-2*xspeed*turnLength)/Math.pow(turnLength,2);
+			yDir = (2*deltaY-2*yspeed*turnLength)/Math.pow(turnLength,2);
+			System.out.println(" x ")
+			go=true;
+			return true;
+		}
+		return false;
 	}
 }

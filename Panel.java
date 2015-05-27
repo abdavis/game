@@ -8,24 +8,25 @@ import javax.swing.Timer;
 import java.awt.event.*;
 import java.util.Random;
 
-public class Panel extends JPanel {
-Sprite ship = new Sprite(500,500,0,0);
+public class Panel extends JPanel implements MouseListener{
  Timer gameLoop;
  boolean odd = true;
  boolean collide = false;
  double inVelX, inVelY;
  Random rand = new Random();
  int x,y;
+ int turnLength = 100;
  double XDir,YDir;
  double force = .05;
+ Sprite ship = new Sprite(500,500,0,0,turnLength);
 	public Panel(){
 		//System.out.println("Start");
 
 		gameLoop = new Timer(5, new GameLoop());
-		gameLoop.start();
+
 	}
 	public void paintComponent(Graphics g){
-		super.paintComponent(g);
+    super.paintComponent(g);
     ship.paint(g,this);
 	}
 	void gravity(){
@@ -47,12 +48,35 @@ Sprite ship = new Sprite(500,500,0,0);
 				particle[i].setXDir(xforce);
 				particle[i].setYDir(yforce);
 			}*/
+
 		}
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+    @Override
+    /* Empty method definition. */
+    public void mouseReleased(MouseEvent e) {
+    }
+    @Override
+    /* Empty method definition. */
+    public void mouseEntered(MouseEvent e) {
+    }
+    @Override
+    /* Empty method definition. */
+    public void mouseExited(MouseEvent e) {
+    }
+    @Override
+    public void mouseClicked(MouseEvent e) {
+      if(ship.startTurn(e.getX(),e.getY()))
+        gameLoop.start();
+    }
 
 	class GameLoop implements ActionListener{
 		public void actionPerformed(ActionEvent e){
 			ship.move();
 			repaint();
+      if(!ship.go)
+        gameLoop.stop();
 		}
   }
 }
